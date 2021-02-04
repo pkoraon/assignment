@@ -30,9 +30,9 @@ pipeline {
             }
         }
 
-        stage("Run") {
+        stage("Deploy") {
             steps {
-                sh "mvn spring-boot:run"
+                sh "mvn clean deploy"
             }
         }
     }
