@@ -12,6 +12,24 @@ pipeline {
                 sh "mvn clean install"
             }
         }
+
+        stage("Kill Server") {
+            steps {
+                sh '''#!/bin/bash
+                    process=$(lsof -t -i:8080)
+                    echo $process
+                    
+                    if [ -z "$process" ]
+                    then
+                        echo "No process at port 8080"
+                    else
+                        echo "Killing process at port 8080"
+                        kill $process
+                    fi
+                '''
+            }
+        }
+
         stage("Run") {
             steps {
                 sh "mvn spring-boot:run"
