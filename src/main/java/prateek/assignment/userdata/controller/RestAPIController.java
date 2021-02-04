@@ -26,11 +26,6 @@ public class RestAPIController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
     }
 
-    @GetMapping("/rest/get-all-2")
-    public ResponseEntity<List<User>> getAllUsers2() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
-    }
-
     @PostMapping("/rest/login")
     public ResponseEntity<Map<String, Object>> getUser(@RequestBody Login login) {
         Map<String, Object> map = userService.login(login);
