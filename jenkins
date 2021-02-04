@@ -32,7 +32,9 @@ pipeline {
 
         stage("Deploy") {
             steps {
-                sh "mvn clean deploy"
+                withEnv(["JENKINS_NODE_COOKIE=dontkill"]) {
+                    sh "nohup ./mvn spring-boot:run"
+                }
             }
         }
     }
