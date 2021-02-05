@@ -1,8 +1,6 @@
 package prateek.assignment.userdata.interfaces;
 
 import prateek.assignment.userdata.entity.User;
-
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +18,7 @@ public interface UserDao {
 
     public Map<String, String> deleteUser(int id);
 
-    public void updateUserInfo(User user) throws ConstraintViolationException;
+    public void updateUserInfo(User user);
 
     public boolean usernameExists(String username);
 

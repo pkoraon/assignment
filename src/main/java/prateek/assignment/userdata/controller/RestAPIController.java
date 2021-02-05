@@ -41,7 +41,6 @@ public class RestAPIController {
         try{
             userService.createUser(user, map);
         } catch (UnexpectedRollbackException ex) {
-            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
         }
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);

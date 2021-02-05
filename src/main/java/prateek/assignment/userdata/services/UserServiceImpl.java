@@ -9,10 +9,13 @@ import prateek.assignment.userdata.interfaces.UserService;
 import prateek.assignment.userdata.model.Login;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static prateek.assignment.userdata.utils.Constants.MESSAGE;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -53,18 +56,16 @@ public class UserServiceImpl implements UserService {
 
         if(userRepository.emailExists(user.getEmail())){
             user.setEmailExists(true);
-            map.put("message", "Email already exists.");
+            map.put(MESSAGE, "Email already exists.");
         }else if(userRepository.usernameExists(user.getUsername())){
             user.setUsernameExists(true);
-            map.put("message", "Username already exist. Try something else.");
+            map.put(MESSAGE, "Username already exist. Try something else.");
         }
 
-        if(user.getUsernameExists() || user.getEmailExists()) {
-            return;
-        }else{
+        if(!user.getUsernameExists() &&  !user.getEmailExists()) {
             try{
                 userRepository.createUser(user);
-                map.put("message", "User created");
+                map.put(MESSAGE, "User created");
             }catch(ConstraintViolationException ex){
                 Set<ConstraintViolation<?>> exceptions = ex.getConstraintViolations();
                 for (ConstraintViolation<?> exception : exceptions) {
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
                     );
                 }
             }catch(Exception ex) {
-                map.put("message", "Could not create new user.");
+                map.put(MESSAGE, "Could not create new user.");
             }
         }
     }
@@ -89,22 +90,18 @@ public class UserServiceImpl implements UserService {
             User retrieved = userRepository.findUserById(id);
 
             if(retrieved == null){
-                map.put("message", "User does not exist.");
+                map.put(MESSAGE, "User does not exist.");
             }else{
                 retrieved = userRepository.findUserByEmail(user.getEmail());
-                if (retrieved != null) {
-                    if(id != retrieved.getId()) {
-                        user.setEmailExists(true);
-                        map.put("message", "Email id exists");
-                    }
+                if (retrieved != null && retrieved.getId() != id) {
+                    user.setEmailExists(true);
+                    map.put(MESSAGE, "Email id exists");
                 }
 
                 retrieved = userRepository.findUserByUsername(user.getUsername());
-                if(retrieved != null) {
-                    if(id != retrieved.getId()){
-                        user.setUsernameExists(true);
-                        map.put("message", "Username already exists. Try something else.");
-                    }
+                if(retrieved != null && retrieved.getId() != id) {
+                    user.setUsernameExists(true);
+                    map.put(MESSAGE, "Username already exists. Try something else.");
                 }
 
                 if(user.getUsernameExists() || user.getEmailExists()) {
@@ -113,7 +110,7 @@ public class UserServiceImpl implements UserService {
                     user.setId(id);
                     try{
                         userRepository.updateUserInfo(user);
-                        map.put("message", "Successfully updated");
+                        map.put(MESSAGE, "Successfully updated");
                     }catch (ConstraintViolationException ex) {
                         Set<ConstraintViolation<?>> exceptions = ex.getConstraintViolations();
                         for (ConstraintViolation<?> exception : exceptions) {
@@ -123,12 +120,12 @@ public class UserServiceImpl implements UserService {
                             );
                         }
                     }catch (Exception ex) {
-                        map.put("message", "Some Error Occurred.");
+                        map.put(MESSAGE, "Some Error Occurred.");
                     }
                 }
             }
         }else{
-            map.put("message", "Invalid ID");
+            map.put(MESSAGE, "Invalid ID");
         }
 
         return map;

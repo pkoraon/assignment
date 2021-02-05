@@ -12,6 +12,7 @@ import javax.persistence.TypedQuery;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.*;
+import static prateek.assignment.userdata.utils.Constants.USERNAME;
 
 @Repository
 @Transactional
@@ -39,7 +40,6 @@ public class UserRepository implements UserDao {
             throw ex;
         }
 
-        return;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class UserRepository implements UserDao {
     public User findUserByUsername(String username){
         TypedQuery<User> query = entityManager
                 .createQuery("select u from User u where u.username=:username", User.class)
-                .setParameter("username", username);
+                .setParameter(USERNAME, username);
 
         if(query.getResultList().isEmpty()){
             return null;
@@ -82,7 +82,7 @@ public class UserRepository implements UserDao {
     }
 
     @Override
-    public void updateUserInfo(User user) throws ConstraintViolationException {
+    public void updateUserInfo(User user) {
 
         try{
             entityManager.merge(user);
@@ -96,15 +96,14 @@ public class UserRepository implements UserDao {
 
     @Override
     public User findUserById(int id) {
-        User user = entityManager.find(User.class, id);
-        return user;
+        return entityManager.find(User.class, id);
     }
 
     @Override
     public boolean usernameExists(String username) {
         TypedQuery<User> query = entityManager
                 .createQuery("select u from User u where u.username=:username", User.class)
-                .setParameter("username", username);
+                .setParameter(USERNAME, username);
 
         return !query.getResultList().isEmpty();
     }
@@ -124,7 +123,7 @@ public class UserRepository implements UserDao {
                 .createQuery(
                         "select u from User u where u.username= :username and u.password=:password",
                         User.class
-                ).setParameter("username", username)
+                ).setParameter(USERNAME, username)
                 .setParameter("password", password);
 
         User user;
