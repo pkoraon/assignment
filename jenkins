@@ -5,9 +5,22 @@ pipeline {
         maven "maven"
     }
 
+    environment {
+        BRANCH_NAME=env.BRANCH_NAME
+    }
+
     stages {
         stage("Build") {
             steps {
+                script {
+                    if (BRANCH_NAME=='main') {
+                        echo 'Branch Name main matched'
+                        echo BRANCH_NAME
+                    } else {
+                        echo 'Branch name main did not matched'
+                        echo BRANCH_NAME
+                    }
+                }
                 sh "mvn -version"
                 sh "mvn clean install"
             }
