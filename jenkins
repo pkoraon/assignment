@@ -5,15 +5,12 @@ pipeline {
         maven "maven"
     }
 
-    environment {
-        BRANCH_NAME=env.BRANCH_NAME
-    }
-
     stages {
         stage("Build") {
             steps {
+                sh '''BRANCH_NAME=$(git branch)'''
                 script {
-                    if (BRANCH_NAME=='main') {
+                    if (env.BRANCH_NAME=='main') {
                         echo 'Branch Name main matched'
                         echo BRANCH_NAME
                     } else {
