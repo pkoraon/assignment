@@ -47,7 +47,7 @@ public class User {
     @Transient
     private boolean emailExists = false;
 
-    public User() {
+    public  User() {
 
     }
 

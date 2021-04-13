@@ -11,12 +11,28 @@ import prateek.assignment.userdata.entity.User;
 import prateek.assignment.userdata.repository.UserRepository;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 // To launch spring boot context
 @ExtendWith(SpringExtension.class)
 // Spring Boot Application Class
 @SpringBootTest(classes = UserDataApplication.class)
 class UserDataApplicationTests {
 
+    @Autowired
+    UserRepository userDao;
 
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Test
+    void contextLoads() {
+        assertNotNull(userDao);
+    }
+
+    @Test
+    void GetAllUsersTest() {
+        List<User> users = userDao.getAllUsers();
+        assertNotNull(users);
+    }
 
 }

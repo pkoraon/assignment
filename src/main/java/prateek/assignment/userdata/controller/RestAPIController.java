@@ -1,4 +1,5 @@
 package prateek.assignment.userdata.controller;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +36,11 @@ public class RestAPIController {
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 
-    @PostMapping("/rest")
-    public ResponseEntity<Map<String, String>> createUser(@RequestBody User user) {
+    @PostMapping("/rest/create-user")
+    public ResponseEntity<Map<String, String>> createUser(@RequestBody JsonNode payload) {
         Map<String, String> map = new HashMap<>();
         try{
-            userService.createUser(user, map);
+            userService.createUser(payload, map);
         } catch (UnexpectedRollbackException ex) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
         }
@@ -52,9 +53,9 @@ public class RestAPIController {
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 
-    @PutMapping("/rest")
-    public ResponseEntity<Map<String, String>> updateUser(@RequestParam int id, @RequestBody User user) {
-        Map<String, String> map = userService.updateUserData(id, user);
+    @PutMapping("/rest/update-user")
+    public ResponseEntity<Map<String, String>> updateUser(@RequestParam int id, @RequestBody JsonNode payload) {
+        Map<String, String> map = userService.updateUserData(id, payload);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(map);
     }
 

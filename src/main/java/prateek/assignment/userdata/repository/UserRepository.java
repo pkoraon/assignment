@@ -82,11 +82,12 @@ public class UserRepository implements UserDao {
     }
 
     @Override
-    public void updateUserInfo(User user) {
+    public void updateUserInfo(User user) throws ConstraintViolationException {
 
         try{
             entityManager.merge(user);
         }catch (ConstraintViolationException ex) {
+            logger.error("UserRepository.updateUserInfo() {}", ex.getConstraintViolations().toString());
             throw ex;
         }catch (Exception ex) {
             throw ex;

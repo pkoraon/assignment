@@ -1,5 +1,9 @@
 package prateek.assignment.userdata.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,17 +13,17 @@ import prateek.assignment.userdata.interfaces.UserService;
 import prateek.assignment.userdata.model.Login;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static prateek.assignment.userdata.utils.Constants.MESSAGE;
+import static prateek.assignment.userdata.utils.Constants.*;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private UserDao userRepository;
 
@@ -52,9 +56,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void createUser(User user, Map<String, String> map) {
-
-        if(userRepository.emailExists(user.getEmail())){
+    public void createUser(JsonNode paylod, Map<String, String> map) {
+        logger.info("UserServiceImpl.createUser() called with payload {}", paylod);
+        User user = new Gson().fromJson(paylod.toString(),User.class);
+        if(userRepository.emailExists(paylod.get("email").toString())){
             user.setEmailExists(true);
             map.put(MESSAGE, "Email already exists.");
         }else if(userRepository.usernameExists(user.getUsername())){
@@ -82,11 +87,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Map<String,String> updateUserData(int id, User user) {
+    public Map<String,String> updateUserData(int id, JsonNode payload) {
 
         Map<String, String> map = new HashMap<>();
 
         if (id != 0) {
+            User user = new Gson().fromJson(payload.toString(), User.class);
             User retrieved = userRepository.findUserById(id);
 
             if(retrieved == null){
@@ -110,8 +116,10 @@ public class UserServiceImpl implements UserService {
                     user.setId(id);
                     try{
                         userRepository.updateUserInfo(user);
+                        logger.info("User {}", user.toMap());
                         map.put(MESSAGE, "Successfully updated");
                     }catch (ConstraintViolationException ex) {
+                        logger.error("ConstraintViolationException");
                         Set<ConstraintViolation<?>> exceptions = ex.getConstraintViolations();
                         for (ConstraintViolation<?> exception : exceptions) {
                             map.put(
@@ -120,6 +128,7 @@ public class UserServiceImpl implements UserService {
                             );
                         }
                     }catch (Exception ex) {
+
                         map.put(MESSAGE, "Some Error Occurred.");
                     }
                 }
